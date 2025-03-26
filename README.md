@@ -57,3 +57,16 @@ httpx==0.28.1
 python-dotenv==1.0.1
 
 ```
+
+5. check the docker compose version
+```
+atul@atul-Lenovo-G570:~/greenbook$ docker compose version
+
+```
+
+6. create `docker-compose.yml` in project root directory. and write below code in this file.
+
+```
+
+```
+

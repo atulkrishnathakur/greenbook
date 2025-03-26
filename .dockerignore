@@ -1,0 +1,6 @@
+# Ignore environment and configuration files
+.env
+
+# Ignore version control directories
+.git/
+.gitignore

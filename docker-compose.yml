@@ -1,0 +1,20 @@
+# This is the version of the Docker Compose file
+version: '3.9'
+
+services:
+  fastapiapp:
+    build:
+      context: .
+      dockerfile: Dockerfile # Path to the Dockerfile
+    image: fastapiappimage:1.0 # Image name and tag
+    container_name: fastapiappcontainer # Container name
+    ports:
+      - "8000:8000" # Mapping container port 8000 to host port 8000
+    volumes:
+      - webstore:/greenbook/data # Persistent storage for the application
+    environment:
+      - ENV=production # Set environment variable
+
+volumes:
+  webstore:
+    driver: local # Use the local driver for storage
