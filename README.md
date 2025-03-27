@@ -142,7 +142,7 @@ atul@atul-Lenovo-G570:~$ docker login
 
 ```
 4. Tag your local machine image with this repository.
-   Command: `$ docker tag <local image name>:<tag> <docker user name >/<docker repository>:<tag>
+   Command: `$ docker tag <local image name>:<tag> <docker user name >/<docker repository>:<tag>`
    ```
     atul@atul-Lenovo-G570:~$ docker tag fastapiappimage:1.0 atulkrishnathakur/greenbook:1.0
 
