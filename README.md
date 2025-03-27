@@ -153,3 +153,66 @@ atul@atul-Lenovo-G570:~$ docker login
     atul@atul-Lenovo-G570:~$ docker push atulkrishnathakur/greenbook:1.0
    ```
 5. Note: when you run `docker images` command then you got `fastapiappimage:1.0` and `atulkrishnathakur/greenbook:1.0` with same image id. It means `atulkrishnathakur/greenbook:1.0` not a new image. It is a simply new reference(tag) of the same image.
+
+
+## How to use nginx server 
+1. edit the docker-compose.yml . Here we are using tag 2.0 in `image: fastapiappimage:2.0`
+
+```
+# This is the version of the Docker Compose file
+version: '3.9'
+
+services:
+  fastapiapp:
+    build:
+      context: .
+      dockerfile: Dockerfile # Path to the Dockerfile
+    image: fastapiappimage:2.0 # Image name and tag
+    container_name: fastapiappcontainer # Container name
+    ports:
+      - "8000:8000" # Mapping container port 8000 to host port 8000
+    volumes:
+      - webstore:/greenbook/data # Persistent storage for the application
+    environment:
+      - ENV=production # Set environment variable
+
+  nginx:
+    image: nginx:stable
+    container_name: nginxcontainer
+    ports:
+      - "80:80" # Map host port 80 to Nginx container port 80
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro # Mount custom Nginx configuration
+    depends_on:
+      - fastapiapp # Ensure FastAPI app starts before Nginx
+
+volumes:
+  webstore:
+    driver: local # Use the local driver for storage
+
+```
+
+2. Create the `nginx.conf` file in project root directory.
+```
+events {}
+
+http {
+    upstream fastapi_server {
+        server fastapiapp:8000; # Reference the FastAPI service name and port
+    }
+
+    server {
+        listen 80;
+
+        location / {
+            proxy_pass http://fastapi_server;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+        }
+    }
+}
+
+```
+
