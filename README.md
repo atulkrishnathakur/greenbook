@@ -216,3 +216,57 @@ http {
 
 ```
 
+## How to go into container
+
+1. run command to go into project in container. command is `$ docker exec -it <container id> /bin/bash`
+ 
+2. see the below examples of commands. In this example you will see `greenbook` directory of project in container. Here `566adae795e7` is the container id.
+
+```
+atul@atul-Lenovo-G570:~$ docker exec -it 566adae795e7 /bin/bash
+root@566adae795e7:/greenbook# cd ../
+root@566adae795e7:/# ls -l
+total 60
+lrwxrwxrwx   1 root root    7 Feb  3 00:00 bin -> usr/bin
+drwxr-xr-x   2 root root 4096 Dec 31 10:25 boot
+drwxr-xr-x   5 root root  340 Mar 27 05:01 dev
+drwxr-xr-x   1 root root 4096 Mar 27 05:01 etc
+drwxr-xr-x   1 root root 4096 Mar 27 05:01 greenbook
+drwxr-xr-x   2 root root 4096 Dec 31 10:25 home
+lrwxrwxrwx   1 root root    7 Feb  3 00:00 lib -> usr/lib
+lrwxrwxrwx   1 root root    9 Feb  3 00:00 lib64 -> usr/lib64
+drwxr-xr-x   2 root root 4096 Feb  3 00:00 media
+drwxr-xr-x   2 root root 4096 Feb  3 00:00 mnt
+drwxr-xr-x   2 root root 4096 Feb  3 00:00 opt
+dr-xr-xr-x 328 root root    0 Mar 27 05:01 proc
+drwx------   1 root root 4096 Mar 27 05:25 root
+drwxr-xr-x   1 root root 4096 Feb  4 05:18 run
+lrwxrwxrwx   1 root root    8 Feb  3 00:00 sbin -> usr/sbin
+drwxr-xr-x   2 root root 4096 Feb  3 00:00 srv
+dr-xr-xr-x  13 root root    0 Mar 27 05:01 sys
+drwxrwxrwt   1 root root 4096 Mar 26 04:52 tmp
+drwxr-xr-x   1 root root 4096 Feb  3 00:00 usr
+drwxr-xr-x   1 root root 4096 Feb  3 00:00 var
+root@566adae795e7:/# cd greenbook
+root@566adae795e7:/greenbook# ls -l
+total 12
+drwxr-xr-x 1 root root 4096 Mar 27 05:01 app
+drwxr-xr-x 2 root root 4096 Mar 26 04:52 data
+-rw-rw-r-- 1 root root   85 Mar 24 05:38 requirements.txt
+root@566adae795e7:/greenbook# cd app
+root@566adae795e7:/greenbook/app# ls -l
+total 8
+-rw-rw-r-- 1 root root    0 Mar 26 04:50 __init__.py
+drwxr-xr-x 2 root root 4096 Mar 27 05:01 __pycache__
+-rw-rw-r-- 1 root root  122 Mar 26 04:52 main.py
+root@566adae795e7:/greenbook/app# cd ..
+root@566adae795e7:/greenbook# cd data
+root@566adae795e7:/greenbook/data# ls -l
+total 0
+root@566adae795e7:/greenbook/data# exit
+exit
+atul@atul-Lenovo-G570:~$ 
+
+```
+
+3. press `exit` command to exit from container
