@@ -4,4 +4,4 @@ app = FastAPI()
 
 @app.get("/mytest")
 def mytest():
-    return {"message": "Hello, FastAPI!"}
+    return {"message": "Hello, FastAPI updated!"}

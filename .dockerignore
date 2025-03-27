@@ -4,3 +4,21 @@
 # Ignore version control directories
 .git/
 .gitignore
+
+# Ignor the virtual environment of local development
+venv
+
+# Ignore the cache in project
+
+app/__pycache__
+app/alembic/__pycache__
+app/alembic/version/__pycache__
+app/database/__pycache__
+app/database/model/__pycache__
+app/database/model_functions/__pycache__
+app/pydantic_schema/__pycache__
+app/validation/__pycache__
+app/exception/__pycache__
+
+# Ignore the log
+app/logs/*.log
