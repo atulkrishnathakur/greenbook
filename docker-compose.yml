@@ -6,7 +6,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile # Path to the Dockerfile
-    image: fastapiappimage:2.0 # Image name and tag
+    image: fastapiappimage:3.0 # Image name and tag
     container_name: fastapiappcontainer # Container name
     ports:
       - "8000:8000" # Mapping container port 8000 to host port 8000

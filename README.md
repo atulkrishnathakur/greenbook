@@ -11,6 +11,34 @@ atul@atul-Lenovo-G570:~$ cd greenbook
 
 ```
 
+## How to use git tag
+
+1. Reference: https://www.geeksforgeeks.org/git-tags/
+2. create git tag. command : `git tag <tagname>`
+```
+atul@atul-Lenovo-G570:~/greenbook$ git tag 3.0
+
+```
+3. How to see git tag. command : `$ git tag`
+```
+atul@atul-Lenovo-G570:~/greenbook$ git tag
+
+```
+4. How to push git tag on github. command: `git push origin <tagname>`
+```
+atul@atul-Lenovo-G570:~/greenbook$ git push origin 3.0 
+
+```
+5. How to delete tag locally. command: `git tag -d <tagname>`
+```
+atul@atul-Lenovo-G570:~/greenbook$ git tag -d 3.0
+
+```
+6. how to delete a tag from a remote repository from github.command : `git push origin --delete <tagname>`
+```
+atul@atul-Lenovo-G570:~/greenbook$ git push origin --delete 3.0
+
+```
 
 ## How to use docker in this project
 1. go into the project root directory
