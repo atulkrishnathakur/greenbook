@@ -120,7 +120,7 @@ atul@atul-Lenovo-G570:~/greenbook$ docker compose up -d --build
 
 ```
 
-9. Run below command to stop running services
+9. Run below command to stop running services. After down all all container will be remove.
 ```
 atul@atul-Lenovo-G570:~/greenbook$ docker compose down
 
