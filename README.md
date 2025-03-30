@@ -428,3 +428,91 @@ networks:
     ```
     root@0e88346bcaf6:/# exit
     ``` 
+## How to write `docker-compose.yml` that if reboot the system
+1. first run the command to run `docker-compose.yml` file
+```
+atul@atul-Lenovo-G570:~/greenbook$ docker compose up -d --build
+```
+2.  If you are using `restart: always` in services then docker container will be automatically start when system reboot.
+```
+version: '3.9' # Defines the version of Docker Compose being used
+
+services:
+  fastapiapp: # Service for your FastAPI application
+    build:
+      context: . # Directory containing the Dockerfile
+      dockerfile: Dockerfile # Path to the Dockerfile for building the image
+    image: fastapiappimage:4.0 # Name and tag for the Docker image
+    container_name: fastapiappcontainer # Custom name for the container
+    ports:
+      - "8000:8000" # Maps port 8000 on the host to port 8000 in the container. Here port map as <hostport>:<containerport>
+    volumes:
+      - webstore:/greenbook/data # Persistent storage for application-specific data
+    env_file: 
+      - .env # Load all environment variables from the .env file
+    environment:
+      - ENV=$ENV # Explicitly defines the ENV variable from the .env file
+    depends_on:
+      - postgresdb # Ensures PostgreSQL starts before FastAPI app
+    networks:
+      - greenbooknetwork # Connects to your custom network
+    restart: always # Automatically restarts the container if it stops or after a host machine reboot
+
+  nginx: # Service for the Nginx web server
+    image: nginx:stable # Uses the stable version of the official Nginx image
+    container_name: nginxcontainer # Custom name for the container
+    ports:
+      - "80:80" # Maps port 80 on the host to port 80 in the container. Here port map as <hostport>:<containerport>
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro # Mounts the custom Nginx configuration file in read-only mode
+    depends_on:
+      - fastapiapp # Ensures FastAPI app starts before Nginx
+    networks:
+      - greenbooknetwork # Connects to your custom network
+    restart: always # Automatically restarts the container if it stops or after a host machine reboot
+
+  postgresdb: # Service for the PostgreSQL database
+    image: postgres:17 # Uses the official PostgreSQL image for version 17
+    container_name: postgrescontainer # Custom name for the container
+    env_file: 
+      - .env # Load all environment variables from the .env file
+    environment:
+      - POSTGRES_USER=$POSTGRES_USER # Explicitly defines the POSTGRES_USER and $POSTGRES_USER from the .env file
+      - POSTGRES_PASSWORD=$POSTGRES_PASSWORD # Explicitly defines the POSTGRES_PASSWORD and $POSTGRES_PASSWORD from the .env file
+      - POSTGRES_DB=$POSTGRES_DB # Explicitly defines the POSTGRES_DB and $POSTGRES_DB from the .env file
+      - POSTGRES_SERVER=$POSTGRES_SERVER # Explicitly defines the POSTGRES_SERVER and $POSTGRES_SERVER from the .env file
+      - POSTGRES_PORT=$POSTGRES_PORT # Explicitly defines the POSTGRES_PORT and $POSTGRES_PORT from the .env file
+    volumes:
+      - postgresdata:/var/lib/postgresql/data # Persistent storage for database data
+    networks:
+      - greenbooknetwork # Connects to your custom network
+    restart: always # Automatically restarts the container if it stops or after a host machine reboot
+
+  pgadmin4: # Service for pgAdmin4
+    image: dpage/pgadmin4:9.1.0 # Uses pgAdmin4 version 9.1.0
+    container_name: pgadmin4container # Custom name for the pgAdmin4 container
+    ports:
+      - "5050:80" # Maps port 5050 on the host to port 80 in the container
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=$PGADMIN_DEFAULT_EMAIL # Admin email for logging into pgAdmin4
+      - PGADMIN_DEFAULT_PASSWORD=$PGADMIN_DEFAULT_PASSWORD # Admin password for logging into pgAdmin4
+    depends_on:
+      - postgresdb # Ensures PostgreSQL starts before pgAdmin4
+    networks:
+      - greenbooknetwork # Connects to your custom network
+    restart: always # Automatically restarts the container if it stops or after a host machine reboot
+
+volumes:
+  webstore: # Named volume for FastAPI app data
+    driver: local
+    name: greenbook_webstore # Explicitly set the volume name
+
+  postgresdata: # Named volume for PostgreSQL data
+    driver: local
+    name: greenbook_postgresdata # Explicitly set the volume name
+
+networks:
+  greenbooknetwork: # Use consistent naming for the custom network
+    driver: bridge
+    name: greenbook_network # Explicitly provide network name.
+```

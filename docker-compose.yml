@@ -5,7 +5,7 @@ services:
     build:
       context: . # Directory containing the Dockerfile
       dockerfile: Dockerfile # Path to the Dockerfile for building the image
-    image: fastapiappimage:3.0 # Name and tag for the Docker image
+    image: fastapiappimage:5.0 # Name and tag for the Docker image
     container_name: fastapiappcontainer # Custom name for the container
     ports:
       - "8000:8000" # Maps port 8000 on the host to port 8000 in the container. Here port map as <hostport>:<containerport>
@@ -19,6 +19,7 @@ services:
       - postgresdb # Ensures PostgreSQL starts before FastAPI app
     networks:
       - greenbooknetwork # Connects to your custom network
+    restart: always # Automatically restarts the container if it stops or after a host machine reboot
 
   nginx: # Service for the Nginx web server
     image: nginx:stable # Uses the stable version of the official Nginx image
@@ -31,11 +32,11 @@ services:
       - fastapiapp # Ensures FastAPI app starts before Nginx
     networks:
       - greenbooknetwork # Connects to your custom network
+    restart: always # Automatically restarts the container if it stops or after a host machine reboot
 
   postgresdb: # Service for the PostgreSQL database
     image: postgres:17 # Uses the official PostgreSQL image for version 17
     container_name: postgrescontainer # Custom name for the container
-    restart: always # Automatically restarts the container if it stops or after a host machine reboot
     env_file: 
       - .env # Load all environment variables from the .env file
     environment:
@@ -48,6 +49,7 @@ services:
       - postgresdata:/var/lib/postgresql/data # Persistent storage for database data
     networks:
       - greenbooknetwork # Connects to your custom network
+    restart: always # Automatically restarts the container if it stops or after a host machine reboot
 
   pgadmin4: # Service for pgAdmin4
     image: dpage/pgadmin4:9.1.0 # Uses pgAdmin4 version 9.1.0
@@ -61,6 +63,7 @@ services:
       - postgresdb # Ensures PostgreSQL starts before pgAdmin4
     networks:
       - greenbooknetwork # Connects to your custom network
+    restart: always # Automatically restarts the container if it stops or after a host machine reboot
 
 volumes:
   webstore: # Named volume for FastAPI app data
