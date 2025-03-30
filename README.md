@@ -298,3 +298,133 @@ atul@atul-Lenovo-G570:~$
 ```
 
 3. press `exit` command to exit from container
+
+
+## How to use posgressql database and pgadmin4 
+
+1. Take backup first then update the `docker-compose.yml` file forpostgresql database service
+```
+version: '3.9' # Defines the version of Docker Compose being used
+
+services:
+  fastapiapp: # Service for your FastAPI application
+    build:
+      context: . # Directory containing the Dockerfile
+      dockerfile: Dockerfile # Path to the Dockerfile for building the image
+    image: fastapiappimage:3.0 # Name and tag for the Docker image
+    container_name: fastapiappcontainer # Custom name for the container
+    ports:
+      - "8000:8000" # Maps port 8000 on the host to port 8000 in the container. Here port map as <hostport>:<containerport>
+    volumes:
+      - webstore:/greenbook/data # Persistent storage for application-specific data
+    env_file: 
+      - .env # Load all environment variables from the .env file
+    environment:
+      - ENV=$ENV # Explicitly defines the ENV variable from the .env file
+    depends_on:
+      - postgresdb # Ensures PostgreSQL starts before FastAPI app
+    networks:
+      - greenbooknetwork # Connects to your custom network
+
+  nginx: # Service for the Nginx web server
+    image: nginx:stable # Uses the stable version of the official Nginx image
+    container_name: nginxcontainer # Custom name for the container
+    ports:
+      - "80:80" # Maps port 80 on the host to port 80 in the container. Here port map as <hostport>:<containerport>
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro # Mounts the custom Nginx configuration file in read-only mode
+    depends_on:
+      - fastapiapp # Ensures FastAPI app starts before Nginx
+    networks:
+      - greenbooknetwork # Connects to your custom network
+
+  postgresdb: # Service for the PostgreSQL database
+    image: postgres:17 # Uses the official PostgreSQL image for version 17
+    container_name: postgrescontainer # Custom name for the container
+    restart: always # Automatically restarts the container if it stops or after a host machine reboot
+    env_file: 
+      - .env # Load all environment variables from the .env file
+    environment:
+      - POSTGRES_USER=$POSTGRES_USER # Explicitly defines the POSTGRES_USER and $POSTGRES_USER from the .env file
+      - POSTGRES_PASSWORD=$POSTGRES_PASSWORD # Explicitly defines the POSTGRES_PASSWORD and $POSTGRES_PASSWORD from the .env file
+      - POSTGRES_DB=$POSTGRES_DB # Explicitly defines the POSTGRES_DB and $POSTGRES_DB from the .env file
+      - POSTGRES_SERVER=$POSTGRES_SERVER # Explicitly defines the POSTGRES_SERVER and $POSTGRES_SERVER from the .env file
+      - POSTGRES_PORT=$POSTGRES_PORT # Explicitly defines the POSTGRES_PORT and $POSTGRES_PORT from the .env file
+    volumes:
+      - postgresdata:/var/lib/postgresql/data # Persistent storage for database data
+    networks:
+      - greenbooknetwork # Connects to your custom network
+
+  pgadmin4: # Service for pgAdmin4
+    image: dpage/pgadmin4:9.1.0 # Uses pgAdmin4 version 9.1.0
+    container_name: pgadmin4container # Custom name for the pgAdmin4 container
+    ports:
+      - "5050:80" # Maps port 5050 on the host to port 80 in the container
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=$PGADMIN_DEFAULT_EMAIL # Admin email for logging into pgAdmin4
+      - PGADMIN_DEFAULT_PASSWORD=$PGADMIN_DEFAULT_PASSWORD # Admin password for logging into pgAdmin4
+    depends_on:
+      - postgresdb # Ensures PostgreSQL starts before pgAdmin4
+    networks:
+      - greenbooknetwork # Connects to your custom network
+
+volumes:
+  webstore: # Named volume for FastAPI app data
+    driver: local
+    name: greenbook_webstore # Explicitly set the volume name
+
+  postgresdata: # Named volume for PostgreSQL data
+    driver: local
+    name: greenbook_postgresdata # Explicitly set the volume name
+
+networks:
+  greenbooknetwork: # Use consistent naming for the custom network
+    driver: bridge
+    name: greenbook_network # Explicitly provide network name.
+    
+```
+
+2. open the `http://localhost:5050` to open pgadmin4 in browser. enter `PGADMIN_DEFAULT_EMAIL` and `PGADMIN_DEFAULT_PASSWORD` password to login
+
+3. connect pgadmin4 to use
+  - install pgadmin4
+  - Right click on Severs
+  - Click on Register
+  - Click on Server
+  - General Tab
+    - name: server1
+  - Connection Tab
+    - Host name/address: postgresdb (Note: PostgreSQL database service name of docker-compose.yml file)
+    - Port: 5432
+    - Maintenance Database: postgres
+    - Username: usergreenbookdb (Note: PostgreSQL database username of docker-compose.yml file)
+    - Password: ****** (Note: PostgreSQL database password of docker-compose.yml file)
+    - Click on Save button
+  - Click on Server1
+    - to show all database
+  - Right click on server1
+    - Click on Create
+    - Click on Database (note: you can create database)
+
+4. How to check database in postgresql container
+  - run the command: `docker exec -it < container name Or container id > bash`
+    ```
+    atul@atul-Lenovo-G570:~/greenbook$ docker exec -it postgrescontainer bash
+    ```
+  - Run below command to login in postgresql database. Command: `psql -U <database user> -d <database name>`
+    ```
+    root@0e88346bcaf6:/# psql -U usergreenbookdb -d greenbookdb
+    psql (17.4 (Debian 17.4-1.pgdg120+2))
+    Type "help" for help.
+
+    greenbookdb=#
+    ```
+    
+  - type `\q` to exit from postgresql database
+    ```
+    greenbookdb=# \q
+    ```
+  - type `exit` to exit from container
+    ```
+    root@0e88346bcaf6:/# exit
+    ``` 
