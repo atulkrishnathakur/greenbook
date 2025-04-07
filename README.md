@@ -220,13 +220,13 @@ volumes:
 
 ```
 
-2. Create the `nginx.conf` file in project root directory.
+2. Create the `greenbook/nginx.conf` file in project root directory to use in docker.
 ```
 events {}
 
 http {
     upstream fastapi_server {
-        server fastapiapp:8000; # Reference the FastAPI service name and port
+        server fastapiapp:8000; # It is the yml file service name and port
     }
 
     server {
@@ -515,4 +515,54 @@ networks:
   greenbooknetwork: # Use consistent naming for the custom network
     driver: bridge
     name: greenbook_network # Explicitly provide network name.
+```
+
+## How to create alembic in `greenbook/app` directory of project
+```
+(venv) atul@atul-Lenovo-G570:~/greenbook/app$ alembic init alembic
+
+```
+
+## How to install package from `requirements.txt`
+```
+(venv) atul@atul-Lenovo-G570:~/greenbook$ pip install -r requirements.txt
+
+```
+
+
+## How to create a nginx configuration file in project root directory to run in local machine
+1. create `greenbook/nginx-dev.conf` file
+```
+events {}
+
+http {
+    upstream fastapi_server {
+       server localhost:8000; # for development on local machine
+    }
+
+    server {
+        listen 80;
+
+        location / {
+            proxy_pass http://fastapi_server;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+        }
+    }
+}
+```
+
+2. Run the below command. Use the -c option to point nginx to your custom nginx-dev.conf file
+```
+atul@atul-Lenovo-G570:~/greenbook$ sudo nginx -c /home/atul/greenbook/nginx-dev.conf
+```
+3. If you want to completely stop nginx from your custom configuration.
+```
+(venv) atul@atul-Lenovo-G570:~/greenbook$ sudo nginx -s stop
+```
+4. Restart the nginx
+```
+atul@atul-Lenovo-G570:~/greenbook$ sudo systemctl restart nginx
 ```

@@ -5,7 +5,10 @@
 .git/
 .gitignore
 
-# Ignor the virtual environment of local development
+# Ignore the nginx configuration file
+nginx-dev.conf
+
+# Ignore the virtual environment of local development
 venv
 
 # Ignore the cache in project

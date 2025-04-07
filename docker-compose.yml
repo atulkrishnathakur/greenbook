@@ -5,7 +5,7 @@ services:
     build:
       context: . # Directory containing the Dockerfile
       dockerfile: Dockerfile # Path to the Dockerfile for building the image
-    image: fastapiappimage:5.0 # Name and tag for the Docker image
+    image: fastapiappimage:6.0 # Name and tag for the Docker image
     container_name: fastapiappcontainer # Custom name for the container
     ports:
       - "8000:8000" # Maps port 8000 on the host to port 8000 in the container. Here port map as <hostport>:<containerport>
