@@ -657,3 +657,31 @@ networks:
     driver: bridge
     name: greenbook_network # Explicitly provide network name.
 ```
+## How to check volume in host machine
+1. In host machine you can see volume path `/var/lib/docker/volumes/<volume_name>`
+
+## How to import `.sql ` file form web pgadmin4
+1. Copy and paste `.sql` file in docker volume. Path in host machine `/var/lib/docker/volumes/greenbook_pgadmin4data/_data/storage/a***a@gmail.com/`. In `yml` file you can see `pgadmin4data:/var/lib/pgadmin`.
+2. login in container and check the path `/var/lib/pgadmin` because in yml file you can see `pgadmin4data:/var/lib/pgadmin`.
+3. open the `http://localhost:5050`
+4. login in web pgadmin4
+5. write clikc on database and click on query tool. Click on open file then you will see your pasted file. Select your file and click on open button. Click on run button to execute queries of `.sql` file.
+
+## Where file will be save after export from web pgadmin4
+1. Your exported file will be save in volume. Path of volume in host machine is `/var/lib/docker/volumes/greenbook_pgadmin4data/_data/storage/a***a_gmail.com/`
+
+## How to check pgadmin4 container
+1. first login in pgadmin4 container
+```
+atul@atul-Lenovo-G570:~$ docker exec -it pgadmin4container /bin/bash
+
+```
+2. In container to check exported sql file `/var/lib/pgadmin/storage/a*****a_gmail.com`. In yml file you can see `pgadmin4data:/var/lib/pgadmin`
+```
+0a0a6a8eb77d:/var/lib/pgadmin/storage/a*****a_gmail.com$ ls -l
+total 32
+-rw-rw-r--    1 root     root         21893 Apr  4 04:46 greenbook3.sql
+-rw-r--r--    1 pgadmin  root          1095 Apr 10 06:20 postgres.sql
+-rw-r--r--    1 pgadmin  root          1095 Apr 11 05:30 postgresbkp.sql
+
+```
