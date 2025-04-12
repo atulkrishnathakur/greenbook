@@ -685,3 +685,10 @@ total 32
 -rw-r--r--    1 pgadmin  root          1095 Apr 11 05:30 postgresbkp.sql
 
 ```
+
+## How to check env in container
+command: `atul@atul-Lenovo-G570:~$ docker exec -it <container name or id> env`
+```
+atul@atul-Lenovo-G570:~$ docker exec -it fastapiappcontainer env
+
+```
