@@ -10,7 +10,7 @@ services:
     ports:
       - "8000:8000" # Maps port 8000 on the host to port 8000 in the container. Here port map as <hostport>:<containerport>
     volumes:
-      - webstore:/greenbook/data # Persistent storage for application-specific data
+      - webstore:/greenbook/app/storage # Persistent storage for application-specific data
     env_file: 
       - .env # Load all environment variables from the .env file
     environment:

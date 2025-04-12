@@ -82,7 +82,7 @@ def empUploadProfile(
     ):
     try:
         loginEmpId = loginEmp.id
-        UPLOAD_DIRECTORY = "./uploads/" # Ensure the directory exists 
+        UPLOAD_DIRECTORY = ".storage/uploads/" # Ensure the directory exists 
         os.makedirs(UPLOAD_DIRECTORY, exist_ok=True)
         fileNameReq = file.filename
         splitFileTpl = os.path.splitext(fileNameReq)
@@ -135,7 +135,7 @@ def generateEmpRegistrationDetails(
     db:Session = Depends(get_db)
     ):
     try:
-        GENERATED_PDF_DIR = './generated_pdf/'
+        GENERATED_PDF_DIR = '.storage/generated_pdf/'
         loginEmpId = loginEmp.id
         empmObj = get_emp_by_id(db,loginEmpId)
         template = jinjatemplates.get_template("generate_emp_details.html")
