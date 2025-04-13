@@ -141,23 +141,23 @@ atul@atul-Lenovo-G570:~/greenbook$ docker compose up --build
 - you can press `ctrl-c` to exit
 
 
-8. Run the below command to run `docker-compose.yml` file container in Detached Mode. If you want to run container in background then use `-d` flag
+9. Run the below command to run `docker-compose.yml` file container in Detached Mode. If you want to run container in background then use `-d` flag
 
 ```
 atul@atul-Lenovo-G570:~/greenbook$ docker compose up -d --build
 
 ```
 
-9. Run below command to stop running services. After down all all container will be remove.
+10. Run below command to stop running services. After down all all container will be remove.
 ```
 atul@atul-Lenovo-G570:~/greenbook$ docker compose down
 
 ```
 
-10. you can check logs of docker compose
+11. Now can check logs of docker compose. Once check the error
 
 ```
-atul@atul-Lenovo-G570:~/greenbook$ docker compose logs -f
+atul@atul-Lenovo-G570:~/greenbook$ docker compose logs
 
 ```
 
@@ -692,3 +692,113 @@ command: `atul@atul-Lenovo-G570:~$ docker exec -it <container name or id> env`
 atul@atul-Lenovo-G570:~$ docker exec -it fastapiappcontainer env
 
 ```
+
+
+## How to upload file from fastapi fromwork application in docker persistent volume
+
+1. for this check the modified `docker-compose.yml` file
+
+```
+# version: '3.9' # Defines the version of Docker Compose being used. No need to write in newer version in docker compose file
+
+services:
+  fastapiapp: # Service for your FastAPI application
+    build:
+      context: . # Directory containing the Dockerfile
+      dockerfile: Dockerfile # Path to the Dockerfile for building the image
+    image: fastapiappimage:8.0 # Name and tag for the Docker image
+    container_name: fastapiappcontainer # Custom name for the container
+    ports:
+      - "8000:8000" # Maps port 8000 on the host to port 8000 in the container. Here port map as <hostport>:<containerport>
+    volumes:
+      - webstore:/greenbook/app/uploads # Persistent storage for application-specific data
+      - webpdfstore:/greenbook/app/generated_pdf
+    env_file: 
+      - .env # Load all environment variables from the .env file
+    environment:
+      - ENV=$ENV # Explicitly defines the ENV variable from the .env file
+    depends_on:
+      - postgresdb # Ensures PostgreSQL starts before FastAPI app
+    networks:
+      - greenbooknetwork # Connects to your custom network
+    restart: always # Automatically restarts the container if it stops or after a host machine reboot
+
+  nginx: # Service for the Nginx web server
+    image: nginx:stable # Uses the stable version of the official Nginx image
+    container_name: nginxcontainer # Custom name for the container
+    ports:
+      - "80:80" # Maps port 80 on the host to port 80 in the container. Here port map as <hostport>:<containerport>
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro # Mounts the custom Nginx configuration file in read-only mode. It is bind mount. It is not persistent valume
+    depends_on:
+      - fastapiapp # Ensures FastAPI app starts before Nginx
+    networks:
+      - greenbooknetwork # Connects to your custom network
+    restart: always # Automatically restarts the container if it stops or after a host machine reboot
+
+  postgresdb: # Service for the PostgreSQL database
+    image: postgres:17 # Uses the official PostgreSQL image for version 17
+    container_name: postgrescontainer # Custom name for the container
+    env_file: 
+      - .env # Load all environment variables from the .env file
+    environment:
+      - POSTGRES_USER=$POSTGRES_USER # Explicitly defines the POSTGRES_USER and $POSTGRES_USER from the .env file
+      - POSTGRES_PASSWORD=$POSTGRES_PASSWORD # Explicitly defines the POSTGRES_PASSWORD and $POSTGRES_PASSWORD from the .env file
+      - POSTGRES_DB=$POSTGRES_DB # Explicitly defines the POSTGRES_DB and $POSTGRES_DB from the .env file
+      - POSTGRES_SERVER=$POSTGRES_SERVER # Explicitly defines the POSTGRES_SERVER and $POSTGRES_SERVER from the .env file
+      - POSTGRES_PORT=$POSTGRES_PORT # Explicitly defines the POSTGRES_PORT and $POSTGRES_PORT from the .env file
+    volumes:
+      - postgresdata:/var/lib/postgresql/data # Persistent storage for database data
+    networks:
+      - greenbooknetwork # Connects to your custom network
+    restart: always # Automatically restarts the container if it stops or after a host machine reboot
+
+  pgadmin4: # Service for pgAdmin4
+    image: dpage/pgadmin4:9.1.0 # Uses pgAdmin4 version 9.1.0
+    container_name: pgadmin4container # Custom name for the pgAdmin4 container
+    ports:
+      - "5050:80" # Maps port 5050 on the host to port 80 in the container
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=$PGADMIN_DEFAULT_EMAIL # Admin email for logging into pgAdmin4
+      - PGADMIN_DEFAULT_PASSWORD=$PGADMIN_DEFAULT_PASSWORD # Admin password for logging into pgAdmin4
+    depends_on:
+      - postgresdb # Ensures PostgreSQL starts before pgAdmin4
+    volumes:
+      - pgadmin4data:/var/lib/pgadmin # Persistent storage for database data
+    networks:
+      - greenbooknetwork # Connects to your custom network
+    restart: always # Automatically restarts the container if it stops or after a host machine reboot
+
+volumes:
+  webstore: # Named volume for FastAPI app data
+    driver: local # used to create valume in host machine
+    name: greenbook_uploads # Explicitly set the volume name
+
+  webpdfstore: # Named volume for FastAPI app data
+    driver: local # used to create valume in host machine
+    name: greenbook_generated_pdf # Explicitly set the volume name
+
+  
+  postgresdata: # Named volume for PostgreSQL data
+    driver: local # used to create valume in host machine
+    name: greenbook_postgresdata # Explicitly set the volume name
+
+  pgadmin4data: # Named volume for PostgreSQL data
+    driver: local # used to create valume in host machine
+    name: greenbook_pgadmin4data # Explicitly set the volume name
+
+networks:
+  greenbooknetwork: # Use consistent naming for the custom network
+    driver: bridge
+    name: greenbook_network # Explicitly provide network name.
+
+```
+
+2. In the `.yml` file you can see below volume. You have not need to create `/greenbook/app/uploads` path in your project directory. docker use this path with volume. Data will be store/save in volume. In your source code you will use `app/uploads` path to upload files in your source code logic.
+
+```
+    volumes:
+      - webstore:/greenbook/app/uploads # Persistent storage for application-specific data
+      - webpdfstore:/greenbook/app/generated_pdf
+```
+

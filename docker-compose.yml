@@ -1,4 +1,4 @@
-version: '3.9' # Defines the version of Docker Compose being used
+# version: '3.9' # Defines the version of Docker Compose being used. No need to write in newer version in docker compose file
 
 services:
   fastapiapp: # Service for your FastAPI application
@@ -10,7 +10,8 @@ services:
     ports:
       - "8000:8000" # Maps port 8000 on the host to port 8000 in the container. Here port map as <hostport>:<containerport>
     volumes:
-      - webstore:/greenbook/app/storage # Persistent storage for application-specific data
+      - webstore:/greenbook/app/uploads # Persistent storage for application-specific data
+      - webpdfstore:/greenbook/app/generated_pdf
     env_file: 
       - .env # Load all environment variables from the .env file
     environment:
@@ -70,8 +71,13 @@ services:
 volumes:
   webstore: # Named volume for FastAPI app data
     driver: local # used to create valume in host machine
-    name: greenbook_webstore # Explicitly set the volume name
+    name: greenbook_uploads # Explicitly set the volume name
 
+  webpdfstore: # Named volume for FastAPI app data
+    driver: local # used to create valume in host machine
+    name: greenbook_generated_pdf # Explicitly set the volume name
+
+  
   postgresdata: # Named volume for PostgreSQL data
     driver: local # used to create valume in host machine
     name: greenbook_postgresdata # Explicitly set the volume name
