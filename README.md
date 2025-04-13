@@ -802,3 +802,41 @@ networks:
       - webpdfstore:/greenbook/app/generated_pdf
 ```
 
+
+
+## How to delete dangling images (<none> images)
+
+1. see the dangling images
+```
+atul@atul-Lenovo-G570:~/greenbook$ docker images
+REPOSITORY                      TAG       IMAGE ID       CREATED             SIZE
+fastapiappimage                 8.0       6cdf9ce8856e   31 minutes ago      1.4GB
+<none>                          <none>    cef8117d5e3f   50 minutes ago      1.4GB
+<none>                          <none>    407ea7696834   About an hour ago   1.4GB
+<none>                          <none>    3be28394f137   About an hour ago   1.4GB
+<none>                          <none>    8cfe99548974   2 hours ago         1.4GB
+<none>                          <none>    9a1d2ed0ced7   2 hours ago         1.4GB
+<none>                          <none>    02f198c45d11   2 hours ago         1.4GB
+<none>                          <none>    7592a7c416b7   3 hours ago         1.4GB
+<none>                          <none>    986f3743b5de   3 hours ago         1.4GB
+<none>                          <none>    5a757a60e254   3 hours ago         1.4GB
+<none>                          <none>    a87369cab88c   3 hours ago         1.4GB
+<none>                          <none>    9e320be8f65a   3 hours ago         1.4GB
+<none>                          <none>    ede03278bb80   3 hours ago         1.4GB
+<none>                          <none>    a7777d702011   4 hours ago         1.4GB
+<none>                          <none>    4fe53649bbe1   4 hours ago         1.4GB
+<none>                          <none>    cf350a71dc10   4 hours ago         1.4GB
+<none>                          <none>    6e73228758aa   4 hours ago         1.4GB
+<none>                          <none>    2216797f4296   4 hours ago         1.4GB
+<none>                          <none>    b37bfc1c64bb   4 hours ago         1.4GB
+<none>                          <none>    63c88fc18355   4 hours ago         1.4GB
+<none>                          <none>    684a69d4a17a   4 hours ago         1.4GB
+<none>                          <none>    c34083d0b903   5 hours ago         1.4GB
+
+```
+
+2. Run the `docker image prune -f` delete all dangling images
+```
+atul@atul-Lenovo-G570:~$ docker image prune -f
+
+```
